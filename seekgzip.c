@@ -559,7 +559,7 @@ int seekgzip_index_load(seekgzip_t *sz){
     return SEEKGZIP_OPENERROR;
 
   // Read the magic string.
-  if (gzgetc(gz) != 'Z' || gzgetc(gz) != 'S' || gzgetc(gz) != 'E' || gzgetc(gz) != 3){
+  if (gzgetc(gz) != 'Z' || gzgetc(gz) != 'S' || gzgetc(gz) != 'E' || gzgetc(gz) != '3'){
     ret = SEEKGZIP_IMCOMPATIBLE;
     goto error_exit;
   }
@@ -588,7 +588,6 @@ int seekgzip_index_load(seekgzip_t *sz){
   gzread(gz, &sz->totin,  sizeof(off_t));
   gzread(gz, &sz->totout, sizeof(off_t));
   gzread(gz, &sz->rawfilesize, sizeof(uint64_t));
-  printf("\nfilesize=%llu\n", sz->rawfilesize);
   
   // Read entry points.
   for (i = 0; i < sz->index->nelements; ++i) {
