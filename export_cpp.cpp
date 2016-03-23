@@ -63,7 +63,7 @@ void reader::seek(long long offset)
 
 void reader::seek(long long offset, int whence)
 {
-    long long file_length, new_offset;
+    long long file_length;
     file_length = seekgzip_unpacked_length(reinterpret_cast<seekgzip_t*>(m_obj));
 
     //seek to the end
@@ -75,6 +75,9 @@ void reader::seek(long long offset, int whence)
         // pass 
     } else {
         throw std::invalid_argument(error_string(SEEKGZIP_ERROR));
+    }
+    if (offset < 0 || offset > file_length) {
+        throw std::invalid_argument(error_string(SEEKGZIP_READERROR));
     }
     if (m_obj != NULL) {
         seekgzip_seek(
