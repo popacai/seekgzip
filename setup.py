@@ -25,12 +25,10 @@ seekgzip_module = Extension(
     )
 
 setup(
-    name = '@PACKAGE@',
-    version = '@VERSION@',
-    author = 'Naoaki Okazaki',
+    name = 'seekgzip',
+    version = '3.0',
+    author = 'Naoaki Okazaki, Tao Cai',
     description = """SeekGzip Python module""",
     ext_modules = [seekgzip_module],
     py_modules = ["seekgzip"],
     )
-
-
