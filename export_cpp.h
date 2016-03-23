@@ -22,6 +22,8 @@ public:
     long long tell();
 
     std::string read(int size);
+
+    std::string readline();
 };
 
 #endif/*__EXPORT_H__*/

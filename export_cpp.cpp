@@ -117,5 +117,10 @@ std::string reader::read(int size)
 }
 
 
-
+std::string reader::readline()
+{
+    std::string ret;
+    ret = "";
+    return ret;
+}
 
