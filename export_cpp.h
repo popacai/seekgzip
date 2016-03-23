@@ -3,10 +3,14 @@
 
 #include <string>
 
+#define BUFFER_SIZE 1024
+
 class reader
 {
 protected:
     void *m_obj;
+    off_t offset;
+    char* reader_buffer;
 
 public:
     reader(const char *filename);

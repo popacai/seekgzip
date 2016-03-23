@@ -1,4 +1,5 @@
 #include <string>
+#include <stdio.h>
 #include <stdexcept>
 #include "seekgzip.h"
 #include "export_cpp.h"
@@ -36,10 +37,13 @@ reader::reader(const char *filename)
     if ( (err = seekgzip_error(sgz)) != SEEKGZIP_SUCCESS){
         throw std::invalid_argument(error_string(err));
     }
+    reader_buffer = new char[BUFFER_SIZE + 1];
+    offset = BUFFER_SIZE + 1;
 }
 
 reader::~reader()
 {
+    delete [] reader_buffer;
     this->close();
 }
 
@@ -119,8 +123,38 @@ std::string reader::read(int size)
 
 std::string reader::readline()
 {
-    std::string ret;
-    ret = "";
-    return ret;
+    off_t old_offset;
+    int found;
+    std::string ret = "";
+    while (1) {
+        old_offset = offset;
+        found = 0;
+        for (; offset < BUFFER_SIZE; offset++) {
+            if (reader_buffer[offset] == '\n') {
+                found = 1;
+                break;
+            }
+        }
+
+        reader_buffer[offset] = 0;
+        ret += (char*) (reader_buffer + old_offset);
+        if (found) {
+            offset++;
+            return ret;
+        } else {
+            if (m_obj != NULL) {
+                int n = seekgzip_read(
+                    reinterpret_cast<seekgzip_t*>(m_obj),
+                    reader_buffer,
+                    BUFFER_SIZE 
+                );
+                if (n == 0) {
+                    return ret;
+                }
+                reader_buffer[n] = 0;
+                offset = 0; //reset offset
+            }
+        }
+    }
 }
 
