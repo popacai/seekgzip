@@ -42,6 +42,7 @@ struct tag_seekgzip {
 	off_t                  totin;
 	off_t                  totout;
 	int                    errorcode;
+  uint64_t               rawfilesize; //support for the file which is >2G
 };
 
 /*===== Begin of the portion of zran.c ===== {{{*/
@@ -181,6 +182,7 @@ static int build_index(FILE *in, off_t span, struct access **built, seekgzip_t *
 	int ret;
 	off_t totin, totout;		/* our own total counters to avoid 4GB limit */
 	off_t last;				 /* totout value of last access point */
+  uint64_t rawfilesize;
 	struct access *index = *built; /* access points being generated */
 	z_stream strm;
 	unsigned char input[CHUNK];
@@ -203,7 +205,7 @@ static int build_index(FILE *in, off_t span, struct access **built, seekgzip_t *
 	/* inflate the input, maintain a sliding window, and build an index -- this
 	   also validates the integrity of the compressed data using the check
 	   information at the end of the gzip or zlib stream */
-	totin = totout = last = 0;
+	totin = totout = last = rawfilesize = 0;
 	strm.avail_out = 0;
 	do {
 		/* get some compressed data from input file */
@@ -230,9 +232,11 @@ static int build_index(FILE *in, off_t span, struct access **built, seekgzip_t *
 			   update the total input and output counters */
 			totin += strm.avail_in;
 			totout += strm.avail_out;
+      rawfilesize += strm.avail_out;
 			ret = inflate(&strm, Z_BLOCK);	  /* return at end of block */
 			totin -= strm.avail_in;
 			totout -= strm.avail_out;
+      rawfilesize -= strm.avail_out;
 			if (ret == Z_NEED_DICT)
 				ret = Z_DATA_ERROR;
 			if (ret == Z_MEM_ERROR || ret == Z_DATA_ERROR)
@@ -269,6 +273,7 @@ static int build_index(FILE *in, off_t span, struct access **built, seekgzip_t *
 	*built = index;
 	sz->totin  = totin;
 	sz->totout = totout;
+  sz->rawfilesize = rawfilesize;
 	return index->allocated;
 
 	/* return error */
@@ -509,11 +514,12 @@ int seekgzip_index_save(seekgzip_t *sz){
 		return SEEKGZIP_OPENERROR;
 
 	// Write a header.
-	gzwrite(gz, "ZSE2", 4);
+	gzwrite(gz, "ZSE3", 4);
 	write_uint32(gz, (uint32_t)sizeof(off_t));
 	write_uint32(gz, (uint32_t)sz->index->nelements);
 	gzwrite(gz, &sz->totin,  sizeof(off_t));
 	gzwrite(gz, &sz->totout, sizeof(off_t));
+  gzwrite(gz, &sz->rawfilesize, sizeof(uint64_t));
 	
 	// Write out entry points.
 	for (i = 0;i < sz->index->nelements;++i) {
@@ -553,7 +559,7 @@ int seekgzip_index_load(seekgzip_t *sz){
 		return SEEKGZIP_OPENERROR;
 
 	// Read the magic string.
-	if (gzgetc(gz) != 'Z' || gzgetc(gz) != 'S' || gzgetc(gz) != 'E' || gzgetc(gz) != '2'){
+	if (gzgetc(gz) != 'Z' || gzgetc(gz) != 'S' || gzgetc(gz) != 'E' || gzgetc(gz) != 3){
 		ret = SEEKGZIP_IMCOMPATIBLE;
 		goto error_exit;
 	}
@@ -581,6 +587,8 @@ int seekgzip_index_load(seekgzip_t *sz){
 	// Read size of unpacked file
 	gzread(gz, &sz->totin,  sizeof(off_t));
 	gzread(gz, &sz->totout, sizeof(off_t));
+	gzread(gz, &sz->rawfilesize, sizeof(uint64_t));
+  printf("\nfilesize=%llu\n", sz->rawfilesize);
 	
 	// Read entry points.
 	for (i = 0; i < sz->index->nelements; ++i) {
