@@ -15,7 +15,7 @@ all: $(TARGETS)
 clean:
 	rm -rf $(TARGETS)
 	rm -rf export_python.cpp
-	
+  
 install:
 	mkdir -p $(DESTDIR)/usr/bin/ $(DESTDIR)/usr/lib/ $(DESTDIR)/usr/include/seekgzip/
 	cp $(USR_BIN_TARGETS) $(DESTDIR)/usr/bin/
@@ -33,4 +33,11 @@ libseekgzip.so: seekgzip.c
 	$(SWIG) -c++ -python -o export_python.cpp swig.i
 	$(PYTHON) setup.py build
 	touch $@
+
+test_clean:
+	rm ./cspserving_pacing_forecast.log.2016-03-18.gz.idx
+
+test:
+	./seekgzip -b cspserving_pacing_forecast.log.2016-03-18.gz
+  
 
