@@ -17,11 +17,15 @@ public:
 
     void seek(long long offset);
 
+    void seek(long long offset, int whence);
+
     long long tell();
 
     std::string read(int size);
 };
 
 #endif/*__EXPORT_H__*/
+
+
 
 

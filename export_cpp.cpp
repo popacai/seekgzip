@@ -61,6 +61,24 @@ void reader::seek(long long offset)
     }
 }
 
+void reader::seek(long long offset, int whence)
+{
+    long long file_length, new_offset;
+    file_length = seekgzip_unpacked_length(reinterpret_cast<seekgzip_t*>(m_obj));
+
+    //seek to the end
+    if (whence == 2) {
+        offset = file_length - offset;
+    }
+    if (m_obj != NULL) {
+        seekgzip_seek(
+            reinterpret_cast<seekgzip_t*>(m_obj),
+            offset
+            );
+    }
+}
+
+
 long long reader::tell()
 {
     if (m_obj != NULL) {
@@ -88,5 +106,7 @@ std::string reader::read(int size)
     }
     return ret;
 }
+
+
 
 
