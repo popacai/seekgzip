@@ -1,0 +1,7 @@
+seekgzip.py
+.python
+build/
+export_python.cpp
+libseekgzip.so
+seekgzip
+

@@ -107,14 +107,13 @@ std::string reader::read(int size)
 {
     std::string ret;
     if (m_obj != NULL) {
-        char *buffer = new char[size+1];
+        char *buffer = new char[size];
         int n = seekgzip_read(
             reinterpret_cast<seekgzip_t*>(m_obj),
             buffer,
             size
             );
-        buffer[n] = 0;
-        ret = buffer;
+        ret.assign(buffer, size);
         delete[] buffer;
     }
     return ret;
