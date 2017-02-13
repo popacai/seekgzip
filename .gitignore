@@ -4,4 +4,4 @@ build/
 export_python.cpp
 libseekgzip.so
 seekgzip
-
+*.pyc
