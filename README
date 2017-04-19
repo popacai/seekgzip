@@ -1,5 +1,6 @@
                                SeekGzip
-                              Version 1.0
+                              Version 1.1
+                 http://github.com/popacai/seekgzip
                  http://github.com/chokkan/seekgzip
 
 
@@ -23,6 +24,9 @@ $ make all
 * HOW TO INSTALL THE UTILITY
 $ make install
 
+* HOW TO TEST
+$ make test
+
 * HOW TO USE THE UTILITY
 
 (1) Building an index for a gzip file
@@ -35,6 +39,8 @@ $ seekgzip <FILE> [BEGIN-END]
 This reads the data in the gzip file ${FILE} from the offset ${BEGIN}
 to ${END}, and outputs the data to STDOUT.
 
+* HOW TO USE PYTHON LIB
+read the test.py
 
 * COPYRIGHT AND LICENSING INFORMATION
 
@@ -64,4 +70,3 @@ The zlib License
 
   Jean-loup Gailly        Mark Adler
   jloup@gzip.org          madler@alumni.caltech.edu
-
