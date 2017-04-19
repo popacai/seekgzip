@@ -3,6 +3,7 @@ SWIG=swig
 PYTHON=python
 
 LDFLAGS=-lz
+CFLAGS=-O3 -march=native -mtune=native
 
 USR_BIN_TARGETS=seekgzip
 USR_LIB_TARGETS=libseekgzip.so
@@ -24,7 +25,7 @@ install:
 	test -f .python && $(PYTHON) setup.py install || exit 0
 
 seekgzip: seekgzip.c main.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ seekgzip.c main.c
+	$(CC) $(CFLAGS) -o $@ seekgzip.c main.c $(LDFLAGS)
 
 libseekgzip.so: seekgzip.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -fPIC -shared -o $@ $<
