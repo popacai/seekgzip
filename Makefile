@@ -34,3 +34,7 @@ libseekgzip.so: seekgzip.c
 	$(SWIG) -c++ -python -o export_python.cpp swig.i
 	$(PYTHON) setup.py build
 	touch $@
+
+test:
+	test -f .python && $(PYTHON) setup.py install || exit 0
+	test -f .python && $(PYTHON) test.py || exit 0

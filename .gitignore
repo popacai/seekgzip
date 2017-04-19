@@ -5,3 +5,5 @@ export_python.cpp
 libseekgzip.so
 seekgzip
 *.pyc
+*.gz
+*.idx

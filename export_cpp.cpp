@@ -105,25 +105,16 @@ long long reader::tell()
 
 std::string reader::read(int size)
 {
-    static char* buffer = new char[1024];
-    static size_t buffer_size = 1024;
-
     std::string ret;
     if (m_obj != NULL) {
-        if(buffer_size < size) {
-          delete[] buffer;
-          buffer_size = size;
-          buffer = new char[buffer_size];
-        }
+        char* buffer = new char[size];
         int n = seekgzip_read(
             reinterpret_cast<seekgzip_t*>(m_obj),
             buffer,
             size
             );
-        if(n < size) {
-          size = n;
-        }
-        ret.assign(buffer, size);
+        ret.assign(buffer, n);
+        delete [] buffer;
     }
     return ret;
 }
