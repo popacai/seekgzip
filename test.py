@@ -4,16 +4,16 @@ import gzip
 
 def generate_txt_file():
   test_gzip = "testfile.gz"
-  with gzip.open(test_gzip, "w+") as g:
-    for i in xrange(10000):
+  with gzip.open(test_gzip, "wt+") as g:
+    for i in range(10000):
       g.write(str(i) + "\n")
 
 
 def generate_bin_file():
   test_gzip = "testbinfile.gz"
-  c = "\x00"
-  with gzip.open(test_gzip, "w+") as g:
-    for i in xrange(10000):
+  c = b"\x00"
+  with gzip.open(test_gzip, "wb+") as g:
+    for i in range(10000):
       g.write(c)
 
 
